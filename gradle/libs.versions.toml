@@ -12,6 +12,15 @@ constraintlayout = "2.2.1"
 gridlayout = "1.0.0"
 material = "1.12.0"
 appcompat = "1.6.1"
+firebaseFirestoreKtx = "25.1.3"
+firebaseAuthKtx = "23.2.0"
+coordinatorlayout = "1.3.0"
+lifecycleLivedataKtx = "2.8.7"
+lifecycleViewmodelKtx = "2.8.7"
+navigationFragmentKtx = "2.8.9"
+navigationUiKtx = "2.8.9"
+glide = "4.12.0"
+firebaseDatabaseKtx = "21.0.0"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -34,6 +43,15 @@ androidx-gridlayout = { group = "androidx.gridlayout", name = "gridlayout", vers
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version = "3.1.0" }
 
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glideCompiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

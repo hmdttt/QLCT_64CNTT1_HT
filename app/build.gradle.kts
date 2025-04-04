@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -54,6 +56,22 @@ dependencies {
     implementation(libs.material)
     implementation(libs.appcompat)
     implementation(libs.mpandroidchart)
+
+    // Firebase BoM (quản lý phiên bản Firebase tự động)
+    implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
+
+    // Firebase Firestore
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
+    // Firebase Authentication
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+    // Firebase Analytics
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
+    // Glide (thư viện load ảnh)
+    implementation(libs.glide)
+    implementation(libs.firebase.database.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

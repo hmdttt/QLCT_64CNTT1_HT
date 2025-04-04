@@ -48,7 +48,7 @@
                 android:textSize="16sp"/>
 
             <EditText
-                android:id="@+id/editTextDate"
+                android:id="@+id/etDate"
                 android:layout_width="343dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -78,89 +78,113 @@
             android:layout_marginTop="8dp"/>
 
         <!-- Danh mục chi tiêu -->
-        <GridLayout
-            android:id="@+id/gridLayoutTienChi"
+        <LinearLayout
+            android:id="@+id/LinearLayoutChi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="3"
-            android:rowCount="4"
-            android:layout_marginTop="16dp">
+            android:orientation="vertical">
+
+            <GridLayout
+                android:id="@+id/gridLayoutTienChi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:columnCount="3"
+                android:rowCount="5">
+
+                <Button
+                    android:id="@+id/btnAnuong"
+                    android:text="Ăn uống" />
+
+                <Button
+                    android:id="@+id/btnGiadung"
+                    android:text="Gia dụng" />
+
+                <Button
+                    android:id="@+id/btnQuanao"
+                    android:text="Quần áo" />
+
+                <Button
+                    android:id="@+id/btnMypham"
+                    android:text="Mỹ phẩm" />
+
+                <Button
+                    android:id="@+id/btnPhianchoi"
+                    android:text="Phí ăn chơi" />
+
+                <Button
+                    android:id="@+id/btnYte"
+                    android:text="Y tế" />
+
+                <Button
+                    android:id="@+id/btnGiaoduc"
+                    android:text="Giáo dục" />
+
+                <Button
+                    android:id="@+id/btnDilai"
+                    android:text="Đi lại" />
+
+                <Button
+                    android:id="@+id/btnTiennha"
+                    android:text="Tiền nhà" />
+
+                <Button
+                    android:id="@+id/btnLienlac"
+                    android:text="Liên lạc" />
+
+                <Button
+                    android:id="@+id/btnTietkiem"
+                    android:text="Tiết kiệm" />
+            </GridLayout>
 
             <Button
-                android:id="@+id/btnAnuong"
-                android:text="Ăn uống" />
+                android:id="@+id/btnAddExpense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
 
-            <Button
-                android:id="@+id/btnGiadung"
-                android:text="Gia dụng" />
+                android:text="Nhập khoản chi"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
 
-            <Button
-                android:id="@+id/btnQuanao"
-                android:text="Quần áo" />
 
-            <Button
-                android:id="@+id/btnMypham"
-                android:text="Mỹ phẩm" />
-
-            <Button
-                android:id="@+id/btnPhianchoi"
-                android:text="Phí ăn chơi" />
-
-            <Button
-                android:id="@+id/btnYte"
-                android:text="Y tế" />
-
-            <Button
-                android:id="@+id/btnGiaoduc"
-                android:text="Giáo dục" />
-
-            <Button
-                android:id="@+id/btnDilai"
-                android:text="Đi lại" />
-
-            <Button
-                android:id="@+id/btnTiennha"
-                android:text="Tiền nhà" />
-
-            <Button
-                android:id="@+id/btnLienlac"
-                android:text="Liên lạc" />
-
-            <Button
-                android:id="@+id/btnTietkiem"
-                android:text="Tiết kiệm" />
-        </GridLayout>
-
-        <!-- Nút nhập khoản chi -->
-        <GridLayout
-            android:id="@+id/gridLayoutTienthu"
+        <LinearLayout
+            android:id="@+id/LinearLayoutThu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:columnCount="3"
-            android:rowCount="4">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <GridLayout
+                android:id="@+id/gridLayoutTienthu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:columnCount="3"
+                android:rowCount="4">
+
+                <Button
+                    android:id="@+id/btnTienluong"
+                    android:text="Lương" />
+
+                <Button
+                    android:id="@+id/btnTienthuong"
+                    android:text="Tiền thưởng" />
+
+                <Button
+                    android:id="@+id/btnPhucap"
+                    android:text="Phụ cấp" />
+
+            </GridLayout>
 
             <Button
-                android:id="@+id/btnTienluong"
-                android:text="Lương" />
+                android:id="@+id/btnAddIncome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Nhập khoản thu"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
 
-            <Button
-                android:id="@+id/btnTienthuong"
-                android:text="Tiền thưởng" />
-
-            <Button
-                android:id="@+id/btnPhucap"
-                android:text="Phụ cấp" />
-        </GridLayout>
-
-        <Button
-            android:id="@+id/btnAddExpense"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Nhập khoản chi"
-
-            android:textColor="@android:color/white"
-            android:layout_marginTop="16dp"/>
     </LinearLayout>
 
 
