@@ -41,18 +41,31 @@
             android:gravity="center_vertical"
             >
 
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ngày"
                 android:textSize="16sp"/>
 
+            <ImageButton
+                android:id="@+id/btnPreviousDate"
+                android:layout_width="46dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_left" />
+
             <EditText
                 android:id="@+id/etDate"
-                android:layout_width="343dp"
+                android:layout_width="244dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="date" />
+                android:inputType="date"
+                android:gravity="center"/>
+            <ImageButton
+                android:id="@+id/btnNextDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_right" />
 
         </LinearLayout>
 
@@ -62,7 +75,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-
             android:hint="Chưa nhập vào"
             android:padding="8dp" />
 

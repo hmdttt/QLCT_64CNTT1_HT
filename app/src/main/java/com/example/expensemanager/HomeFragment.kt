@@ -13,6 +13,12 @@ import androidx.fragment.app.Fragment
 import com.example.expensemanager.models.Transaction
 import com.google.firebase.firestore.FirebaseFirestore
 
+import android.app.DatePickerDialog
+import android.widget.ImageButton
+import android.widget.TextView
+import java.text.SimpleDateFormat
+import java.util.*
+
 class HomeFragment : Fragment() {
 
     private var selectedCategory: String? = null
@@ -24,6 +30,9 @@ class HomeFragment : Fragment() {
     private lateinit var layoutTienThu: LinearLayout
     private lateinit var layoutTienChi: LinearLayout
 
+    private lateinit var btnPrevDate: ImageButton
+    private lateinit var btnNextDate: ImageButton
+    private var selectedCalendar: Calendar = Calendar.getInstance()
 
     private lateinit var edtSoTien: EditText
     private lateinit var edtNote: EditText
@@ -57,6 +66,12 @@ class HomeFragment : Fragment() {
         edtSoTien = view.findViewById(R.id.etAmount)
         edtNote = view.findViewById(R.id.etNote)
         edtDate = view.findViewById(R.id.etDate)
+        updateDateEditText()
+
+
+        btnPrevDate = view.findViewById(R.id.btnPreviousDate)
+        btnNextDate = view.findViewById(R.id.btnNextDate)
+
 
         btnAnUong = view.findViewById(R.id.btnAnuong)
         btnDiLai = view.findViewById(R.id.btnDilai)
@@ -81,6 +96,28 @@ class HomeFragment : Fragment() {
 
         layoutTienChi.visibility = View.VISIBLE
         layoutTienThu.visibility = View.GONE
+
+        edtDate.setOnClickListener {
+            val year = selectedCalendar.get(Calendar.YEAR)
+            val month = selectedCalendar.get(Calendar.MONTH)
+            val day = selectedCalendar.get(Calendar.DAY_OF_MONTH)
+
+            DatePickerDialog(requireContext(), { _, y, m, d ->
+                selectedCalendar.set(y, m, d)
+                updateDateEditText()
+            }, year, month, day).show()
+        }
+
+        btnPrevDate.setOnClickListener {
+            selectedCalendar.add(Calendar.DAY_OF_MONTH, -1)
+            updateDateEditText()
+        }
+
+        btnNextDate.setOnClickListener {
+            selectedCalendar.add(Calendar.DAY_OF_MONTH, 1)
+            updateDateEditText()
+        }
+
 
         btnTienThu.setOnClickListener {
             layoutTienThu.visibility = View.VISIBLE
@@ -265,6 +302,10 @@ class HomeFragment : Fragment() {
         resetCategoryButtons()
     }
 
+    private fun updateDateEditText() {
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        edtDate.setText(sdf.format(selectedCalendar.time))
+    }
 
 
 }
