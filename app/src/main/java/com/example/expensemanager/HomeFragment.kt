@@ -1,5 +1,6 @@
 package com.example.expensemanager
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -38,22 +39,23 @@ class HomeFragment : Fragment() {
     private lateinit var edtNote: EditText
     private lateinit var edtDate: EditText
 
-    private lateinit var btnAnUong: Button
-    private lateinit var btnPhiAnChoi: Button
-    private lateinit var btnGiaDung: Button
-    private lateinit var btnYTe: Button
-    private lateinit var btnMyPham: Button
-    private lateinit var btnGiaoDuc: Button
-    private lateinit var btnTienNha: Button
-    private lateinit var btnLienLac: Button
-    private lateinit var btnTietKiem: Button
-    private lateinit var btnDiLai: Button
-    private lateinit var btnQuanAo: Button
+    private lateinit var btnAnUong: LinearLayout
+    private lateinit var btnPhiAnChoi: LinearLayout
+    private lateinit var btnGiaDung: LinearLayout
+    private lateinit var btnYTe: LinearLayout
+    private lateinit var btnMyPham: LinearLayout
+    private lateinit var btnGiaoDuc: LinearLayout
+    private lateinit var btnTienNha: LinearLayout
+    private lateinit var btnLienLac: LinearLayout
+    private lateinit var btnTietKiem: LinearLayout
+    private lateinit var btnDiLai: LinearLayout
+    private lateinit var btnQuanAo: LinearLayout
 
-    private lateinit var btnLuong: Button
-    private lateinit var btnThuong: Button
-    private lateinit var btnPhuCap: Button
+    private lateinit var btnLuong: LinearLayout
+    private lateinit var btnThuong: LinearLayout
+    private lateinit var btnPhuCap: LinearLayout
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -130,102 +132,88 @@ class HomeFragment : Fragment() {
         }
 
         btnAnUong.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Ăn uống"
             selectedType = "expense"
-            btnAnUong.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnAnUong.isSelected = true
         }
         btnDiLai.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Đi lại"
             selectedType = "expense"
-            btnDiLai.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnDiLai.isSelected = true
         }
         btnQuanAo.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Quần áo"
             selectedType = "expense"
-            btnQuanAo.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnQuanAo.isSelected = true
         }
         btnPhiAnChoi.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Phí ăn chơi"
             selectedType = "expense"
-            btnPhiAnChoi.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnPhiAnChoi.isSelected = true
         }
         btnGiaDung.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Gia dụng"
             selectedType = "expense"
-            btnGiaDung.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnGiaDung.isSelected = true
         }
         btnYTe.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Y tế"
             selectedType = "expense"
-            btnYTe.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnYTe.isSelected = true
         }
         btnMyPham.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Mỹ phẩm"
             selectedType = "expense"
-            btnMyPham.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnMyPham.isSelected = true
         }
         btnGiaoDuc.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Giáo dục"
             selectedType = "expense"
-            btnGiaoDuc.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnGiaoDuc.isSelected = true
         }
         btnTienNha.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Tiền nhà"
             selectedType = "expense"
-            btnTienNha.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnTienNha.isSelected = true
         }
         btnLienLac.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Liên lạc"
             selectedType = "expense"
-            btnLienLac.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnLienLac.isSelected = true
         }
         btnTietKiem.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Tiết kiệm"
             selectedType = "expense"
-            btnTietKiem.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnTietKiem.isSelected = true
         }
         btnLuong.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Lương"
             selectedType = "income"
-            btnLuong.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnLuong.isSelected = true
         }
         btnThuong.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Thưởng"
             selectedType = "income"
-            btnThuong.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnThuong.isSelected = true
         }
         btnPhuCap.setOnClickListener() {
-            resetCategoryButtons()
+            resetCategoryViews()
             selectedCategory = "Phụ cấp"
             selectedType = "income"
-            btnPhuCap.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light)) // Màu nổi bật
-            Toast.makeText(requireContext(), "Đã chọn: $selectedCategory", Toast.LENGTH_SHORT).show()
+            btnPhuCap.isSelected = true
         }
 
         val btnAddExpense = view.findViewById<Button>(R.id.btnAddExpense)
@@ -282,24 +270,24 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun resetCategoryButtons() {
-        val buttons = listOf(
-            btnAnUong, btnDiLai, btnQuanAo, btnPhiAnChoi, btnGiaDung,
-            btnYTe, btnMyPham, btnGiaoDuc, btnTienNha, btnLienLac, btnTietKiem,
+    private fun resetCategoryViews() {
+        val categoryViews = listOf(
+            btnAnUong, btnDiLai, btnQuanAo, btnGiaDung, btnMyPham,
+            btnPhiAnChoi, btnYTe, btnGiaoDuc, btnTienNha, btnLienLac, btnTietKiem,
             btnLuong, btnThuong, btnPhuCap
         )
-
-        for (btn in buttons) {
-            btn.setBackgroundResource(android.R.drawable.btn_default) // Reset về mặc định
+        for (view in categoryViews) {
+            view.isSelected = false
         }
     }
+
 
     private fun resetInput() {
         edtSoTien.setText("")
         edtNote.setText("")
         edtDate.setText("")
         selectedCategory = null
-        resetCategoryButtons()
+        resetCategoryViews()
     }
 
     private fun updateDateEditText() {

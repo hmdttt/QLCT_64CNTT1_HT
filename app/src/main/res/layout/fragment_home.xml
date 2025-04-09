@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@color/white">
+        android:padding="16dp">
 
-        <!-- Thanh chọn Tiền thu / Tiền chi -->
+        <!-- Chọn thu/chi -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -19,18 +20,16 @@
             <Button
                 android:id="@+id/btnTienthu"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Tiền thu"
-                />
+                android:layout_weight="1"
+                android:text="Tiền thu" />
 
             <Button
                 android:id="@+id/btnTienchi"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Tiền chi"
-                />
+                android:layout_weight="1"
+                android:text="Tiền chi" />
         </LinearLayout>
 
         <!-- Chọn ngày -->
@@ -39,114 +38,352 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            >
-
+            android:layout_marginTop="12dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ngày"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
 
             <ImageButton
                 android:id="@+id/btnPreviousDate"
-                android:layout_width="46dp"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_left" />
+                android:src="@drawable/ic_arrow_left"
+                android:background="@android:color/transparent" />
 
             <EditText
                 android:id="@+id/etDate"
-                android:layout_width="244dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:ems="10"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:inputType="date"
-                android:gravity="center"/>
+                android:hint="dd/MM/yyyy" />
+
             <ImageButton
                 android:id="@+id/btnNextDate"
-                android:layout_width="wrap_content"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_right" />
-
+                android:src="@drawable/ic_arrow_right"
+                android:background="@android:color/transparent" />
         </LinearLayout>
 
-        <!-- Nhập ghi chú -->
+        <!-- Ghi chú -->
         <EditText
             android:id="@+id/etNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Chưa nhập vào"
+            android:hint="Ghi chú"
             android:padding="8dp" />
 
-        <!-- Nhập số tiền -->
+        <!-- Số tiền -->
         <EditText
             android:id="@+id/etAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="0"
             android:inputType="numberDecimal"
-
-            android:padding="8dp"
-            android:layout_marginTop="8dp"/>
+            android:padding="8dp" />
 
         <!-- Danh mục chi tiêu -->
         <LinearLayout
             android:id="@+id/LinearLayoutChi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginTop="12dp">
 
             <GridLayout
                 android:id="@+id/gridLayoutTienChi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:columnCount="3"
-                android:rowCount="5">
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
 
-                <Button
+                <!-- An uong -->
+                <LinearLayout
                     android:id="@+id/btnAnuong"
-                    android:text="Ăn uống" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
 
-                <Button
-                    android:id="@+id/btnGiadung"
-                    android:text="Gia dụng" />
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_hamburger48" />
 
-                <Button
-                    android:id="@+id/btnQuanao"
-                    android:text="Quần áo" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ăn uống"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
 
-                <Button
-                    android:id="@+id/btnMypham"
-                    android:text="Mỹ phẩm" />
-
-                <Button
-                    android:id="@+id/btnPhianchoi"
-                    android:text="Phí ăn chơi" />
-
-                <Button
-                    android:id="@+id/btnYte"
-                    android:text="Y tế" />
-
-                <Button
-                    android:id="@+id/btnGiaoduc"
-                    android:text="Giáo dục" />
-
-                <Button
+                <!-- Di chuyển -->
+                <LinearLayout
                     android:id="@+id/btnDilai"
-                    android:text="Đi lại" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
 
-                <Button
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_car48" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Đi lại"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+                <!-- Quần áo -->
+                <LinearLayout
+                    android:id="@+id/btnQuanao"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_shirt" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quần áo"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+                <!-- Gia dụng -->
+                <LinearLayout
+                    android:id="@+id/btnGiadung"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons_8home48" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gia dụng"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+                <!-- Mỹ phâmr -->
+                <LinearLayout
+                    android:id="@+id/btnMypham"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_cosmetics_48" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mỹ phẩm"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+                <!-- Phi an choi -->
+                <LinearLayout
+                    android:id="@+id/btnPhianchoi"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_play" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phí ăn chơi"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+                <!-- Y te -->
+                <LinearLayout
+                    android:id="@+id/btnYte"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_health48" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Y tế"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+                <!-- Giao duc -->
+                <LinearLayout
+                    android:id="@+id/btnGiaoduc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_education" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Giáo dục"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+                <!-- Tien nha -->
+                <LinearLayout
                     android:id="@+id/btnTiennha"
-                    android:text="Tiền nhà" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
 
-                <Button
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_tiennha" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tiền nhà"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+                <!-- Lien Lac -->
+                <LinearLayout
                     android:id="@+id/btnLienlac"
-                    android:text="Liên lạc" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
 
-                <Button
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_phone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Liên lạc"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+                <!-- Tiet Kiem -->
+                <LinearLayout
                     android:id="@+id/btnTietkiem"
-                    android:text="Tiết kiệm" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_pig" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tiết kiệm"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+
             </GridLayout>
 
             <Button
@@ -154,37 +391,100 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-
                 android:text="Nhập khoản chi"
                 android:textColor="@android:color/white" />
         </LinearLayout>
 
-
+        <!-- Danh mục thu nhập (tương tự) -->
         <LinearLayout
             android:id="@+id/LinearLayoutThu"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="12dp">
 
             <GridLayout
                 android:id="@+id/gridLayoutTienthu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:columnCount="3"
-                android:rowCount="4">
+                android:orientation="horizontal">
 
-                <Button
+                <!-- Ví dụ: Lương -->
+                <LinearLayout
                     android:id="@+id/btnTienluong"
-                    android:text="Lương" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
 
-                <Button
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_money48" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lương"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+                <!-- Thưởng -->
+                <LinearLayout
                     android:id="@+id/btnTienthuong"
-                    android:text="Tiền thưởng" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
 
-                <Button
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_thuong" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thưởng"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+                <!-- phu cap-->
+                <LinearLayout
                     android:id="@+id/btnPhucap"
-                    android:text="Phụ cấp" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icons8_dautu" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phụ cấp"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
 
             </GridLayout>
 
@@ -196,8 +496,5 @@
                 android:text="Nhập khoản thu"
                 android:textColor="@android:color/white" />
         </LinearLayout>
-
     </LinearLayout>
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
