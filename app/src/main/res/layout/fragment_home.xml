@@ -16,20 +16,26 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
+            <Button
+                android:id="@+id/btnTienchi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_selector"
+                android:text="Tiền chi"
+                android:textColor="@color/black"
+                android:textStyle="bold"/>
 
             <Button
                 android:id="@+id/btnTienthu"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Tiền thu" />
+                android:background="@drawable/bg_button_selector"
+                android:text="Tiền thu"
+                android:textColor="@color/black"
+                android:textStyle="bold"/>
 
-            <Button
-                android:id="@+id/btnTienchi"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Tiền chi" />
         </LinearLayout>
 
         <!-- Chọn ngày -->
@@ -48,8 +54,8 @@
 
             <ImageButton
                 android:id="@+id/btnPreviousDate"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:src="@drawable/ic_arrow_left"
                 android:background="@android:color/transparent" />
 
@@ -64,8 +70,8 @@
 
             <ImageButton
                 android:id="@+id/btnNextDate"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:src="@drawable/ic_arrow_right"
                 android:background="@android:color/transparent" />
         </LinearLayout>
@@ -391,8 +397,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:background="@drawable/bg_button"
                 android:text="Nhập khoản chi"
                 android:textColor="@android:color/white" />
+
         </LinearLayout>
 
         <!-- Danh mục thu nhập (tương tự) -->
@@ -496,5 +504,32 @@
                 android:text="Nhập khoản thu"
                 android:textColor="@android:color/white" />
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/layoutEditButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btnUpdateTransaction"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sửa giao dịch"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_button"/>
+
+            <Button
+                android:id="@+id/btnDeleteTransaction"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Xoá giao dịch"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_button"/>
+        </LinearLayout>
     </LinearLayout>
+
 </ScrollView>

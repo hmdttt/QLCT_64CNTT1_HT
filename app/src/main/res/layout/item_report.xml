@@ -5,6 +5,14 @@
     android:layout_height="wrap_content"
     android:padding="12dp">
 
+    <!-- ✅ ICON DANH MỤC -->
+    <ImageView
+        android:id="@+id/imgCategoryIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/icons8_thuong" />
+
     <!-- Danh mục bên trái -->
     <TextView
         android:id="@+id/tvCategory"

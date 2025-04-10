@@ -16,7 +16,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 import android.app.DatePickerDialog
 import android.widget.ImageButton
-import android.widget.TextView
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -24,6 +23,7 @@ class HomeFragment : Fragment() {
 
     private var selectedCategory: String? = null
     private var selectedType: String? = null // Mặc định là chi
+    private var editTransactionId: String? = null
 
 
     private lateinit var btnTienThu: Button
@@ -54,6 +54,12 @@ class HomeFragment : Fragment() {
     private lateinit var btnLuong: LinearLayout
     private lateinit var btnThuong: LinearLayout
     private lateinit var btnPhuCap: LinearLayout
+
+    private lateinit var layoutEditButtons: LinearLayout
+    private lateinit var btnUpdateTransaction: Button
+    private lateinit var btnDeleteTransaction: Button
+
+
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -96,6 +102,11 @@ class HomeFragment : Fragment() {
         layoutTienThu = view.findViewById(R.id.LinearLayoutThu)
         layoutTienChi = view.findViewById(R.id.LinearLayoutChi)
 
+        layoutEditButtons = view.findViewById(R.id.layoutEditButtons)
+        btnUpdateTransaction = view.findViewById(R.id.btnUpdateTransaction)
+        btnDeleteTransaction = view.findViewById(R.id.btnDeleteTransaction)
+
+
         layoutTienChi.visibility = View.VISIBLE
         layoutTienThu.visibility = View.GONE
 
@@ -124,11 +135,13 @@ class HomeFragment : Fragment() {
         btnTienThu.setOnClickListener {
             layoutTienThu.visibility = View.VISIBLE
             layoutTienChi.visibility = View.GONE
+            updateThuChiButtons(false)
         }
 
         btnTienChi.setOnClickListener {
             layoutTienThu.visibility = View.GONE
             layoutTienChi.visibility = View.VISIBLE
+            updateThuChiButtons(true)
         }
 
         btnAnUong.setOnClickListener() {
@@ -244,11 +257,111 @@ class HomeFragment : Fragment() {
 
             saveTransaction(amount, note, date, selectedType!!, selectedCategory!!)
         }
+        arguments?.let {
+            if (it.getString("edit_mode") == "true") {
+                val amount = it.getString("amount")
+                val note = it.getString("note")
+                val date = it.getString("date")
+                val type = it.getString("type")
+                val category = it.getString("category")
+                editTransactionId = it.getString("transaction_id")
+
+
+                edtSoTien.setText(amount)
+                edtNote.setText(note)
+                edtDate.setText(date)
+                selectedType = type
+                selectedCategory = category
+
+                when (type) {
+                    "income" -> {
+                        btnTienThu.performClick()
+                    }
+                    "expense" -> {
+                        btnTienChi.performClick()
+                    }
+                }
+
+                when (category) {
+                    "Ăn uống" -> btnAnUong.performClick()
+                    "Đi lại" -> btnDiLai.performClick()
+                    "Quần áo" -> btnQuanAo.performClick()
+                    "Phí ăn chơi" -> btnPhiAnChoi.performClick()
+                    "Gia dụng" -> btnGiaDung.performClick()
+                    "Y tế" -> btnYTe.performClick()
+                    "Mỹ phẩm" -> btnMyPham.performClick()
+                    "Giáo dục" -> btnGiaoDuc.performClick()
+                    "Tiền nhà" -> btnTienNha.performClick()
+                    "Liên lạc" -> btnLienLac.performClick()
+                    "Tiết kiệm" -> btnTietKiem.performClick()
+                    "Lương" -> btnLuong.performClick()
+                    "Thưởng" -> btnThuong.performClick()
+                    "Phụ cấp" -> btnPhuCap.performClick()
+                }
+                // ✨ Chuyển sang chế độ chỉnh sửa
+                layoutEditButtons.visibility = View.VISIBLE
+                btnAddExpense.visibility = View.GONE
+                btnAddIncome.visibility = View.GONE
+            }
+        }
+
+        btnUpdateTransaction.setOnClickListener {
+            val amount = edtSoTien.text.toString().toIntOrNull()
+            val note = edtNote.text.toString()
+            val date = edtDate.text.toString()
+
+            if (amount == null || selectedCategory == null || date.isEmpty()) {
+                Toast.makeText(requireContext(), "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val updated = mapOf(
+                "amount" to amount,
+                "note" to note,
+                "date" to date,
+                "type" to selectedType,
+                "category" to selectedCategory
+            )
+
+            editTransactionId?.let { id ->
+                FirebaseFirestore.getInstance().collection("transactions")
+                    .document(id)
+                    .update(updated)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "Đã cập nhật!", Toast.LENGTH_SHORT).show()
+                        parentFragmentManager.popBackStack() // quay lại màn hình trước
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(requireContext(), "Lỗi khi cập nhật!", Toast.LENGTH_SHORT).show()
+                    }
+            }
+        }
+        btnDeleteTransaction.setOnClickListener {
+            editTransactionId?.let { id ->
+                FirebaseFirestore.getInstance().collection("transactions")
+                    .document(id)
+                    .delete()
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "Đã xoá giao dịch!", Toast.LENGTH_SHORT).show()
+                        parentFragmentManager.popBackStack()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(requireContext(), "Lỗi khi xoá!", Toast.LENGTH_SHORT).show()
+                    }
+            }
+        }
+
+
 
 
 
         return view
     }
+    fun updateThuChiButtons(isChi: Boolean) {
+        btnTienChi.isSelected = isChi
+        btnTienThu.isSelected = !isChi
+    }
+
 
     private fun saveTransaction(amount: Int, note: String, date: String, type: String, category: String) {
         Log.d("FirestoreDebug", "Saving transaction: amount=$amount, note=$note, date=$date, type=$type, category=$category")

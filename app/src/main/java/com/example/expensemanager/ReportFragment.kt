@@ -1,5 +1,6 @@
 package com.example.expensemanager
 
+import android.graphics.Color
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.text.SpannableStringBuilder
@@ -14,20 +15,18 @@ import android.widget.ListView
 import android.widget.NumberPicker
 import android.widget.TextView
 import android.widget.Toast
-import androidx.compose.ui.graphics.Color
 import com.example.expensemanager.models.Transaction
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.firestore.FirebaseFirestore
 import android.graphics.Typeface
-import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import java.text.NumberFormat
 
@@ -45,6 +44,11 @@ class ReportFragment : Fragment() {
     private lateinit var tvTotalIncome: TextView
     private lateinit var tvTotalExpense: TextView
     private lateinit var tvBalance: TextView
+
+    private lateinit var btnChitieu: Button
+    private lateinit var btnThunhap: Button
+    private lateinit var btnHangthang: Button
+    private lateinit var btnHangnam: Button
 
 
 
@@ -65,10 +69,10 @@ class ReportFragment : Fragment() {
 
 
 
-        val btnThunhap = view.findViewById<Button>(R.id.btnThunhap)
-        val btnChitieu = view.findViewById<Button>(R.id.btnChitieu)
-        val btnHangthang = view.findViewById<Button>(R.id.btnHangthang)
-        val btnHangnam = view.findViewById<Button>(R.id.btnHangnam)
+        btnChitieu = view.findViewById(R.id.btnChitieu)
+        btnThunhap = view.findViewById(R.id.btnThunhap)
+        btnHangthang = view.findViewById(R.id.btnHangthang)
+        btnHangnam = view.findViewById(R.id.btnHangnam)
         val btnPrev = view.findViewById<ImageButton>(R.id.btnLeft)
         val btnNext = view.findViewById<ImageButton>(R.id.btnRight)
 
@@ -80,6 +84,7 @@ class ReportFragment : Fragment() {
             val year = selectedCalendar.get(Calendar.YEAR)
             edtDate.setText(String.format("%02d/%d", month, year))
             fetchData()
+            updateButtons2(true)
         }
 
         btnHangnam.setOnClickListener {
@@ -87,6 +92,7 @@ class ReportFragment : Fragment() {
             val year = selectedCalendar.get(Calendar.YEAR)
             edtDate.setText(year.toString())
             fetchData()
+            updateButtons2(false)
         }
 
         btnPrev.setOnClickListener {
@@ -113,11 +119,13 @@ class ReportFragment : Fragment() {
         btnChitieu.setOnClickListener {
             isExpense = true
             displayFilteredData()
+            updateButtons(true)
         }
 
         btnThunhap.setOnClickListener {
             isExpense = false
             displayFilteredData()
+            updateButtons(false)
         }
 
         edtDate.setOnClickListener {
@@ -171,6 +179,15 @@ class ReportFragment : Fragment() {
 
 
         return view
+    }
+
+    fun updateButtons(isChi: Boolean) {
+        btnChitieu.isSelected = isChi
+        btnThunhap.isSelected = !isChi
+    }
+    fun updateButtons2(isChi: Boolean) {
+        btnHangthang.isSelected = isChi
+        btnHangnam.isSelected = !isChi
     }
 
     private fun fetchData() {
@@ -246,6 +263,7 @@ class ReportFragment : Fragment() {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val row = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_report, parent, false)
 
+                val imgCategoryIcon = row.findViewById<ImageView>(R.id.imgCategoryIcon)
                 val tvCategory = row.findViewById<TextView>(R.id.tvCategory)
                 val tvAmountPercent = row.findViewById<TextView>(R.id.tvAmountPercent)
 
@@ -258,6 +276,26 @@ class ReportFragment : Fragment() {
 
                 val amountStr = "${amount}đ"
                 val percentStr = " ${String.format("%.1f", percent)}%"
+
+                val iconRes = when (category.lowercase()) {
+                    "ăn uống"     -> R.drawable.icons8_hamburger48
+                    "đi lại"      -> R.drawable.icons8_car48
+                    "quần áo"     -> R.drawable.icons8_shirt
+                    "phí ăn chơi" -> R.drawable.icons8_play
+                    "gia dụng"    -> R.drawable.icons_8home48
+                    "y tế"        -> R.drawable.icons8_health48
+                    "mỹ phẩm"     -> R.drawable.icons8_cosmetics_48
+                    "giáo dục"    -> R.drawable.icons8_education
+                    "tiền nhà"    -> R.drawable.icons8_tiennha
+                    "liên lạc"    -> R.drawable.icons8_phone
+                    "tiết kiệm"   -> R.drawable.icons8_pig
+                    "lương"       -> R.drawable.icons8_money48
+                    "thưởng"      -> R.drawable.icons8_thuong
+                    "phụ cấp"     -> R.drawable.icons8_dautu
+                    else          -> R.drawable.icons8_thuong
+                }
+                imgCategoryIcon.setImageResource(iconRes)
+
 
 // Append số tiền in đậm, màu đen
                 spannable.append(amountStr)
@@ -287,25 +325,54 @@ class ReportFragment : Fragment() {
                 return row
             }
         }
-
         expenseList.adapter = adapter
+
+        expenseList.setOnItemClickListener { _, _, position, _ ->
+            val selectedCategory = reportData[position].first
+            val fragment = CategoryDetailFragment()
+            val bundle = Bundle()
+            bundle.putString("category_name", selectedCategory)
+            bundle.putString("transaction_type", if (isExpense) "expense" else "income")
+
+            fragment.arguments = bundle
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.frame_container, fragment) // ID của FrameLayout chứa Fragment
+                .addToBackStack(null)
+                .commit()
+        }
+
     }
 
 
 
     private fun showPieChart(data: Map<String, Int>) {
         val entries = ArrayList<PieEntry>()
-        data.forEach { (category, amount) ->
+        for ((category: String, amount: Int) in data) {
             entries.add(PieEntry(amount.toFloat(), category))
         }
 
         val dataSet = PieDataSet(entries, "")
-        dataSet.colors = ColorTemplate.MATERIAL_COLORS.toList()
-        val pieData = PieData(dataSet)
 
+        val customColors = listOf(
+            Color.parseColor("#2196F3"), // Xanh dương (Blue)
+            Color.parseColor("#F44336"), // Đỏ (Red)
+            Color.parseColor("#9C27B0"), // Tím (Purple)
+            Color.parseColor("#FFEB3B"), // Vàng (Yellow)
+            Color.parseColor("#FF9800"), // Cam (Orange)
+            Color.parseColor("#4CAF50"), // Xanh lá (Green)
+            Color.parseColor("#E91E63")  // Hồng (Pink)
+        )
+        dataSet.colors = customColors
+        dataSet.sliceSpace = 2f // hoặc 2f nếu bạn muốn viền mỏng hơn
+
+        val pieData = PieData(dataSet)
         pieChart.data = pieData
         pieChart.invalidate()
     }
+
+
+
 
     private fun updateDateDisplay() {
         val formatted = if (isYearly) {
