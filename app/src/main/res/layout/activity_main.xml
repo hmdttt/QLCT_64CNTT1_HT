@@ -9,10 +9,13 @@
         android:id="@+id/frame_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="56dp"
         app:layout_constraintBaseline_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/bottom_navigation"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
     </FrameLayout>
 
@@ -20,8 +23,8 @@
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
         android:background="@color/white"
+        android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/frame_container"
         app:layout_constraintHorizontal_bias="0.0"

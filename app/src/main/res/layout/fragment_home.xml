@@ -530,6 +530,22 @@
                 android:textColor="@android:color/white"
                 android:background="@drawable/bg_button"/>
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btnCaptureReceipt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chụp hóa đơn"
+            android:layout_marginTop="12dp" />
+
+        <ImageView
+            android:id="@+id/imagePreview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"/>
+
     </LinearLayout>
 
 </ScrollView>

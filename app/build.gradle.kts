@@ -73,6 +73,10 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.firebase.database.ktx)
 
+    implementation(libs.mlkit.text.recognition)
+    implementation(libs.okhttp)
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

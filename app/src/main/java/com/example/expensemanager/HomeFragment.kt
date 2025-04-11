@@ -15,7 +15,32 @@ import com.example.expensemanager.models.Transaction
 import com.google.firebase.firestore.FirebaseFirestore
 
 import android.app.DatePickerDialog
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.WindowManager
+import android.widget.ArrayAdapter
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.ListView
+import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import okio.IOException
+import org.json.JSONArray
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -59,6 +84,237 @@ class HomeFragment : Fragment() {
     private lateinit var btnUpdateTransaction: Button
     private lateinit var btnDeleteTransaction: Button
 
+    private val CAMERA_PERMISSION = android.Manifest.permission.CAMERA
+    private val CAMERA_REQUEST_CODE = 101
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        bitmap?.let {
+            view?.findViewById<ImageView>(R.id.imagePreview)?.setImageBitmap(bitmap)
+            recognizeTextFromImage(bitmap)
+        }
+    }
+
+    private fun recognizeTextFromImage(bitmap: Bitmap) {
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        val image = InputImage.fromBitmap(bitmap, 0)
+
+        recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                val rawText = visionText.text
+                Log.d("OCR", "Raw text: $rawText")
+                sendToGPT(rawText)
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Không thể nhận diện văn bản", Toast.LENGTH_SHORT).show()
+            }
+    }
+    private fun sendToGPT(text: String) {
+        val prompt = """
+        Tôi gửi bạn nội dung hóa đơn sau:
+        "$text"
+        Hãy phân tích, đây là các category để bạn chọn: "Ăn uống", "Đi lại", "Quần áo", "Gia dụng", "Mỹ phẩm", 
+         "Phí ăn chơi", "Y tế", "Giáo dục", "Tiền nhà", "Liên lạc", "Tiết kiệm". Và trả về danh sách các khoản chi với định dạng JSON:
+        [
+          { "amount": ..., "category": "...", "note": "..." },
+          ...
+        ]
+    """.trimIndent()
+
+        val apiKey = "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" // 🔑 Thay bằng OpenRouter API Key
+
+        val json = JSONObject()
+        json.put("model", "gpt-3.5-turbo") // ✅ Đúng model ID // ✅ Dùng mô hình miễn phí
+        json.put("messages", JSONArray().apply {
+            put(JSONObject().apply {
+                put("role", "user")
+                put("content", prompt)
+            })
+        })
+
+        val requestBody = RequestBody.create(
+            "application/json".toMediaTypeOrNull(),
+            json.toString()
+        )
+
+        val request = Request.Builder()
+            .url("https://openrouter.ai/api/v1/chat/completions")
+            .addHeader("Authorization", "Bearer $apiKey")
+            .addHeader("Content-Type", "application/json")
+            .post(requestBody)
+            .build()
+
+        OkHttpClient().newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("GPT", "Lỗi gửi yêu cầu: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val result = response.body?.string()
+                Log.d("GPT_Response", result ?: "No result")
+
+                try {
+                    val jsonResult = JSONObject(result)
+
+                    // Kiểm tra nếu phản hồi là lỗi
+                    if (jsonResult.has("error")) {
+                        val msg = jsonResult.getJSONObject("error").optString("message")
+                        Log.e("GPT_Error", msg)
+                        requireActivity().runOnUiThread {
+                            Toast.makeText(requireContext(), "GPT lỗi: $msg", Toast.LENGTH_LONG).show()
+                        }
+                        return
+                    }
+
+                    // Nếu có choices mới xử lý
+                    if (jsonResult.has("choices")) {
+                        val content = jsonResult
+                            .getJSONArray("choices")
+                            .getJSONObject(0)
+                            .getJSONObject("message")
+                            .getString("content")
+
+                        requireActivity().runOnUiThread {
+                            showTransactionPreviewDialog(content)
+                        }
+                    } else {
+                        Log.e("GPT", "Không có 'choices'")
+                        requireActivity().runOnUiThread {
+                            Toast.makeText(requireContext(), "Phản hồi không hợp lệ từ GPT", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("GPT_Exception", "Lỗi JSON: ${e.message}")
+                    requireActivity().runOnUiThread {
+                        Toast.makeText(requireContext(), "Lỗi xử lý kết quả GPT", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+
+        })
+    }
+    private fun showTransactionPreviewDialog(jsonString: String) {
+        val dialogView = LayoutInflater.from(requireContext())
+            .inflate(R.layout.dialog_transaction_preview, null)
+
+        val listView = dialogView.findViewById<ListView>(R.id.lvPreview)
+        val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirmSave)
+
+        val transactionList = mutableListOf<JSONObject>()
+
+        try {
+            val array = JSONArray(jsonString)
+            for (i in 0 until array.length()) {
+                transactionList.add(array.getJSONObject(i))
+            }
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Lỗi phân tích JSON", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val adapter = object : ArrayAdapter<JSONObject>(requireContext(), R.layout.item_transaction_preview, transactionList) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val itemView = convertView ?: LayoutInflater.from(context)
+                    .inflate(R.layout.item_transaction_preview, parent, false)
+
+                val obj = getItem(position)!!
+                val edtCategory = itemView.findViewById<EditText>(R.id.edtCategory)
+                val edtAmount = itemView.findViewById<EditText>(R.id.edtAmount)
+                val edtNote = itemView.findViewById<EditText>(R.id.edtNote)
+                val imgCategory = itemView.findViewById<ImageView>(R.id.imgCategory)
+
+                // Đặt giá trị ban đầu
+                edtCategory.setText(obj.optString("category"))
+                edtAmount.setText(obj.optInt("amount").toString())
+                edtNote.setText(obj.optString("note"))
+
+                // Gán icon danh mục
+                imgCategory.setImageResource(getCategoryIconRes(obj.optString("category")))
+
+                // Cập nhật dữ liệu nếu người dùng chỉnh sửa
+                edtCategory.addTextChangedListener(createTextWatcher { text ->
+                    obj.put("category", text)
+                    imgCategory.setImageResource(getCategoryIconRes(text))
+                })
+
+                edtAmount.addTextChangedListener(createTextWatcher { text ->
+                    obj.put("amount", text.toIntOrNull() ?: 0)
+                })
+
+                edtNote.addTextChangedListener(createTextWatcher { text ->
+                    obj.put("note", text)
+                })
+
+                return itemView
+            }
+        }
+
+        listView.adapter = adapter
+
+        val dialog = android.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setTitle("Xác nhận và chỉnh sửa")
+            .create()
+
+        btnConfirm.setOnClickListener {
+            for (obj in transactionList) {
+                val category = obj.optString("category")
+                val amount = obj.optInt("amount")
+                val note = obj.optString("note")
+                val date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+
+                saveTransaction(amount, note, date, "expense", category)
+            }
+
+            dialog.dismiss()
+            Toast.makeText(requireContext(), "Đã lưu các khoản chi!", Toast.LENGTH_SHORT).show()
+        }
+
+        dialog.show()
+    }
+    private fun createTextWatcher(onChange: (String) -> Unit): TextWatcher {
+        return object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                onChange(s.toString())
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        }
+    }
+
+    private fun getCategoryIconRes(category: String): Int {
+        return when (category.lowercase(Locale.ROOT)) {
+            "ăn uống" -> R.drawable.icons8_hamburger48
+            "gia dụng" -> R.drawable.icons_8home48
+            "quần áo" -> R.drawable.icons8_shirt
+            "mỹ phẩm" -> R.drawable.icons8_cosmetics_48
+            "phí ăn chơi" -> R.drawable.icons8_play
+            "y tế" -> R.drawable.icons8_health48
+            "giáo dục" -> R.drawable.icons8_education
+            "đi lại" -> R.drawable.icons8_car48
+            "tiền nhà" -> R.drawable.icons8_tiennha
+            "liên lạc" -> R.drawable.icons8_phone
+            "tiết kiệm" -> R.drawable.icons8_pig
+            else -> R.drawable.icons8_pencil_50
+        }
+    }
+
+
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CAMERA_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(requireContext(), "Đã cấp quyền Camera", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Bạn cần cấp quyền Camera để chụp hóa đơn", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
 
     @SuppressLint("MissingInflatedId")
@@ -67,6 +323,15 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view =  inflater.inflate(R.layout.fragment_home, container, false)
+
+
+        view.findViewById<Button>(R.id.btnCaptureReceipt).setOnClickListener {
+            cameraLauncher.launch(null)
+        }
+        if (ContextCompat.checkSelfPermission(requireContext(), CAMERA_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(CAMERA_PERMISSION), CAMERA_REQUEST_CODE)
+        }
+
 
         // Khởi tạo DatabaseHelper
 

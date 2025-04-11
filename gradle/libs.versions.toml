@@ -21,6 +21,8 @@ navigationFragmentKtx = "2.8.9"
 navigationUiKtx = "2.8.9"
 glide = "4.12.0"
 firebaseDatabaseKtx = "21.0.0"
+mlkit-text = "16.0.0"
+okhttp = "4.12.0"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -52,6 +54,9 @@ androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glideCompiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
+mlkit-text-recognition = { group = "com.google.mlkit", name = "text-recognition", version = "16.0.0" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
