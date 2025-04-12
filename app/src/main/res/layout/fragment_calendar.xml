@@ -1,14 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:androidx="http://schemas.android.com/apk/res-auto"
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".CalendarFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
 
-</FrameLayout>
+        <!-- Tiêu đề -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lịch"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp" />
+
+        <!-- Điều hướng tháng -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="8dp">
+
+            <ImageButton
+                android:id="@+id/btnPrevMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_left"
+                android:background="@android:color/transparent" />
+
+            <TextView
+                android:id="@+id/tvMonthYear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="04/2025 (01/04–30/04)"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:paddingHorizontal="12dp" />
+
+            <ImageButton
+                android:id="@+id/btnNextMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_right"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
+
+        <!-- Bảng lịch -->
+        <TableLayout
+            android:id="@+id/calendarTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*"
+            android:paddingHorizontal="4dp" />
+
+        <!-- Tổng thu chi -->
+        <LinearLayout
+            android:id="@+id/layoutSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="@android:color/white"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/tvIncome"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Thu nhập\n0đ"
+                android:textColor="@android:color/holo_blue_light"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvExpense"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Chi tiêu\n0đ"
+                android:textColor="@android:color/holo_red_light"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvBalance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Tổng\n+0đ"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Danh sách giao dịch -->
+        <LinearLayout
+            android:id="@+id/transactionListLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="8dp" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
+

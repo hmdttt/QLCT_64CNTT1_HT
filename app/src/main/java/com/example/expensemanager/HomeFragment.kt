@@ -28,6 +28,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.auth.FirebaseAuth
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -506,6 +507,8 @@ class HomeFragment : Fragment() {
                 Toast.makeText(requireContext(), "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+            val transaction = Transaction(amount, note, date, "expense", selectedCategory!!, userId)
 
             saveTransaction(amount, note, date, selectedType!!, selectedCategory!!)
         }
