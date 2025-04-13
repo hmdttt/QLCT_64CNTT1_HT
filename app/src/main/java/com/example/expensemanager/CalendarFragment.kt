@@ -8,6 +8,7 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import com.example.expensemanager.databinding.FragmentCalendarBinding
 import com.example.expensemanager.models.Transaction
+import com.google.common.io.Resources
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.DecimalFormat
@@ -22,6 +23,9 @@ class CalendarFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private val calendar = Calendar.getInstance()
+    private var selectedDate: Calendar? = null
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -148,51 +152,98 @@ class CalendarFragment : Fragment() {
         binding.tvExpense.text = formatMoney(-expense)
         binding.tvBalance.text = formatMoney(income - expense)
 
-        for (i in 0 until 6) {
+        for (i in 0 until 5) {
             val row = TableRow(requireContext())
             for (j in 0 until 7) {
                 val cellView = layoutInflater.inflate(R.layout.item_calendar_day, row, false)
+                val screenWidth = resources.displayMetrics.widthPixels
+                val density = resources.displayMetrics.density
+                val padding = (8 * density).toInt()
+                val cellSize = ((screenWidth - padding * 2) / 7.2).toInt()
+
+
+                val cellParams = TableRow.LayoutParams(cellSize.toInt(), cellSize.toInt())
+                cellView.layoutParams = cellParams
                 val tvDay = cellView.findViewById<TextView>(R.id.tvDay)
-                val tvAmount = cellView.findViewById<TextView>(R.id.tvAmount)
+                val tvIncome = cellView.findViewById<TextView>(R.id.tvIncome)
+                val tvExpense = cellView.findViewById<TextView>(R.id.tvExpense)
+
+
+
+
 
                 when {
                     i == 0 && j < firstDayOfWeek -> {
                         val day = lastDayPrevMonth - (firstDayOfWeek - j - 1)
                         tvDay.text = day.toString()
+                        tvIncome.text = ""
+                        tvExpense.text = ""
                         tvDay.setTextColor(Color.DKGRAY)
-                        tvAmount.text = ""
+                        cellView.setBackgroundColor(Color.parseColor("#EEEEEE"))
                     }
+
                     dayCounter > daysInMonth -> {
                         tvDay.text = nextMonthDay.toString()
+                        tvIncome.text = ""
+                        tvExpense.text = ""
                         tvDay.setTextColor(Color.DKGRAY)
-                        tvAmount.text = ""
+                        cellView.setBackgroundColor(Color.parseColor("#EEEEEE"))
                         nextMonthDay++
                     }
+
                     else -> {
-                        val list = transactionsByDate[dayCounter]
                         tvDay.text = dayCounter.toString()
+                        val list = transactionsByDate[dayCounter]
 
-                        if (!list.isNullOrEmpty()) {
-                            val total = list.sumOf {
-                                if (it.transaction.type == "income") it.transaction.amount else -it.transaction.amount
+                        val incomeTotal = list?.filter { it.transaction.type == "income" }?.sumOf { it.transaction.amount } ?: 0
+                        val expenseTotal = list?.filter { it.transaction.type == "expense" }?.sumOf { it.transaction.amount } ?: 0
+
+                        tvIncome.text = if (incomeTotal > 0) "${formatMoney(incomeTotal)}" else ""
+                        tvIncome.setTextColor(Color.BLUE)
+                        tvIncome.visibility = View.VISIBLE
+
+                        tvExpense.text = if (expenseTotal > 0) "-${formatMoney(expenseTotal)}" else ""
+                        tvExpense.setTextColor(Color.RED)
+                        tvExpense.visibility = View.VISIBLE
+
+                        val isCurrentMonthCell = !(i == 0 && j < firstDayOfWeek || dayCounter > daysInMonth)
+
+                        if (isCurrentMonthCell) {
+                            val currentDate = Calendar.getInstance().apply {
+                                set(Calendar.YEAR, year)
+                                set(Calendar.MONTH, month)
+                                set(Calendar.DAY_OF_MONTH, dayCounter)
+                                set(Calendar.HOUR_OF_DAY, 0)
+                                set(Calendar.MINUTE, 0)
+                                set(Calendar.SECOND, 0)
+                                set(Calendar.MILLISECOND, 0)
                             }
-                            tvAmount.text = formatMoney(total)
-                            tvAmount.setTextColor(if (total >= 0) Color.BLUE else Color.RED)
 
-                            // Gán sự kiện click để hiển thị chi tiết ngày đó
-                            cellView.setOnClickListener {
-                                showTransactionsForDay(list)
+                            val isSelected = selectedDate?.let {
+                                it.get(Calendar.YEAR) == currentDate.get(Calendar.YEAR) &&
+                                        it.get(Calendar.MONTH) == currentDate.get(Calendar.MONTH) &&
+                                        it.get(Calendar.DAY_OF_MONTH) == currentDate.get(Calendar.DAY_OF_MONTH)
+                            } ?: false
+
+                            if (isSelected) {
+                                cellView.setBackgroundColor(Color.parseColor("#FFF9C4")) // vàng nhạt
+                            } else {
+                                cellView.setBackgroundColor(Color.WHITE)
                             }
-                        } else {
-                            tvAmount.text = "..."
-                            tvAmount.setTextColor(Color.GRAY)
 
                             cellView.setOnClickListener {
-                                showTransactionsForDay(emptyList())
+                                selectedDate = currentDate
+                                drawCalendar(year, month, transactionsByDate)
+                                showTransactionsForDay(list ?: emptyList())
                             }
                         }
+
+
+
                         dayCounter++
                     }
+
+
                 }
                 row.addView(cellView)
             }
