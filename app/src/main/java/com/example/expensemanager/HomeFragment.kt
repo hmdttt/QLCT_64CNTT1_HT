@@ -177,7 +177,6 @@ class HomeFragment : Fragment() {
             dialog.dismiss()
             Toast.makeText(requireContext(), "Đã lưu các khoản chi!", Toast.LENGTH_SHORT).show()
         }
-
         dialog.show()
     }
     private fun createTextWatcher(onChange: (String) -> Unit): TextWatcher {

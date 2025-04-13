@@ -42,7 +42,7 @@ object GPTHelper {
         ]
     """.trimIndent()
 
-        val apiKey = "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"
+        val apiKey = "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"
         val json = JSONObject().apply {
             put("model", "gpt-3.5-turbo")
             put("messages", JSONArray().apply {
