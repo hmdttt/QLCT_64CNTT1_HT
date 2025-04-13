@@ -2,4 +2,11 @@
     <string name="app_name">ExpenseManager</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="desc_prev_month">Tháng trước</string>
+    <string name="desc_next_month">Tháng sau</string>
+    <string name="calendar_title">Lịch</string>
+    <string name="total_income">Thu nhập</string>
+    <string name="total_expense">Chi tiêu</string>
+    <string name="total_balance">Tổng</string>
+
 </resources>

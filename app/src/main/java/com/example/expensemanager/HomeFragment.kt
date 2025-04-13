@@ -29,18 +29,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.expensemanager.helpers.GPTHelper
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-import okio.IOException
+import com.google.firebase.auth.FirebaseAuth
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -434,6 +423,8 @@ class HomeFragment : Fragment() {
                 Toast.makeText(requireContext(), "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+            val transaction = Transaction(amount, note, date, "expense", selectedCategory!!, userId)
 
             saveTransaction(amount, note, date, selectedType!!, selectedCategory!!)
         }
