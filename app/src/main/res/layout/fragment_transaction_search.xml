@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#000000"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Ô tìm kiếm -->
+    <EditText
+        android:id="@+id/editTextSearch"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_search_box"
+        android:hint="Tìm kiếm"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:paddingStart="12dp"
+        android:textColorHint="#999999"
+        android:textColor="#ffffff"
+        android:layout_marginBottom="16dp"
+        android:focusable="true"
+        android:clickable="true"
+        android:inputType="text"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <!-- Thu nhập -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thu nhập"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textIncome"
+                android:text="0đ"
+                android:textColor="#03A9F4"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"
+                android:gravity="center"/>
+        </LinearLayout>
+
+        <!-- Chi phí -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chi phí"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textExpense"
+                android:text="0đ"
+                android:textColor="#F44336"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"
+                android:gravity="center"/>
+        </LinearLayout>
+
+        <!-- Tổng -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tổng"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textTotal"
+                android:text="+0đ"
+                android:textColor="#03A9F4"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"
+                android:gravity="center"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <!-- Danh sách kết quả -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewResults"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp"/>
+</LinearLayout>

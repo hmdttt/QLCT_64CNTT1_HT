@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btn_tim_kiem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🔍 Tìm kiếm giao dịch" />
+
+    <Button
+        android:id="@+id/btn_bao_cao_toan_ky"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📊 Báo cáo toàn kỳ"
+        android:layout_marginTop="16dp" />
+</LinearLayout>
