@@ -54,6 +54,10 @@ class MainActivity : AppCompatActivity() {
                     Log.d("MainActivity", "📊 Trang Báo Cáo")
                     loadFragment(ReportFragment())
                 }
+                R.id.nav_more -> {
+                    Log.d("MainActivity", "⚙️ Trang Khác")
+                    loadFragment(SettingFragment())
+                }
             }
             true
         }

@@ -13,4 +13,8 @@
         android:id="@+id/nav_report"
         android:icon="@drawable/icons8_chart_50"
         android:title="Báo cáo" />
+    <item
+        android:id="@+id/nav_more"
+        android:icon="@drawable/icons8_settings_50"
+        android:title="Khác" />
 </menu>

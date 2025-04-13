@@ -5,62 +5,77 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.google.firebase.database.*
+import com.example.expensemanager.databinding.FragmentFullReportBinding
+import com.example.expensemanager.models.Transaction
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.text.DecimalFormat
 
 class FullReportFragment : Fragment() {
 
     private lateinit var tvIncome: TextView
     private lateinit var tvExpense: TextView
     private lateinit var tvTotal: TextView
-
-    private lateinit var database: DatabaseReference
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_full_report, container, false)
+        val binding = FragmentFullReportBinding.inflate(inflater, container, false)
+        tvIncome = binding.tvIncome
+        tvExpense = binding.tvExpense
+        tvTotal = binding.tvTotal
 
-        tvIncome = view.findViewById(R.id.tvIncome)
-        tvExpense = view.findViewById(R.id.tvExpense)
-        tvTotal = view.findViewById(R.id.tvTotal)
+        db = FirebaseFirestore.getInstance()
 
-        database = FirebaseDatabase.getInstance().reference.child("transactions")
-        loadReportFromFirebase()
+        loadReportData()
 
-        return view
+        return binding.root
     }
 
-    private fun loadReportFromFirebase() {
-        database.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var totalIncome = 0L
-                var totalExpense = 0L
+    private fun loadReportData() {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            Toast.makeText(context, "User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-                for (transactionSnapshot in snapshot.children) {
-                    val amount = transactionSnapshot.child("amount").getValue(Long::class.java) ?: 0
-                    val type = transactionSnapshot.child("type").getValue(String::class.java) ?: ""
+        val userId = user.uid
+        val transactionsRef = db.collection("transactions").whereEqualTo("userId", userId)
 
-                    if (type == "income") {
-                        totalIncome += amount
-                    } else if (type == "expense") {
-                        totalExpense += amount
+        transactionsRef.get()
+            .addOnSuccessListener { snapshot ->
+                var totalIncome = 0
+                var totalExpense = 0
+
+                // Lặp qua các document trong Firestore
+                for (doc in snapshot.documents) {
+                    val txn = doc.toObject(Transaction::class.java)
+                    if (txn != null) {
+                        if (txn.type == "income") {
+                            totalIncome += txn.amount
+                        } else if (txn.type == "expense") {
+                            totalExpense += txn.amount
+                        }
                     }
                 }
 
+                // Tính toán và cập nhật thông tin lên giao diện
                 val balance = totalIncome - totalExpense
-
-                tvIncome.text = "${totalIncome}đ"
-                tvExpense.text = "${totalExpense}đ"
-                tvTotal.text = "${balance}đ"
+                tvIncome.text = "+${formatMoney(totalIncome)}đ"
+                tvExpense.text = "-${formatMoney(totalExpense)}đ"
+                tvTotal.text = "${formatMoney(balance)}đ"
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                tvIncome.text = "Lỗi"
-                tvExpense.text = "Lỗi"
-                tvTotal.text = "Lỗi"
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Error loading data: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-        })
+    }
+
+    private fun formatMoney(amount: Int): String {
+        return DecimalFormat("#,###").format(amount)
     }
 }
+
