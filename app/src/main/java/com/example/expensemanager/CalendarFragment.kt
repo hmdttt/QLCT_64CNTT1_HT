@@ -12,6 +12,7 @@ import com.google.common.io.Resources
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.DecimalFormat
+import androidx.appcompat.app.AlertDialog
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -48,6 +49,9 @@ class CalendarFragment : Fragment() {
         binding.btnNextMonth.setOnClickListener {
             calendar.add(Calendar.MONTH, 1)
             loadTransactionsAndDrawCalendar()
+        }
+        binding.tvMonthYear.setOnClickListener {
+            showMonthYearPickerDialog()
         }
 
         loadTransactionsAndDrawCalendar()
@@ -323,6 +327,34 @@ class CalendarFragment : Fragment() {
             }
         }
     }
+    private fun showMonthYearPickerDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_month_year_picker, null)
+        val monthPicker = dialogView.findViewById<NumberPicker>(R.id.monthPicker)
+        val yearPicker = dialogView.findViewById<NumberPicker>(R.id.yearPicker)
+
+        monthPicker.minValue = 1
+        monthPicker.maxValue = 12
+        monthPicker.value = calendar.get(Calendar.MONTH) + 1
+
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        yearPicker.minValue = currentYear - 10
+        yearPicker.maxValue = currentYear + 10
+        yearPicker.value = calendar.get(Calendar.YEAR)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Chọn tháng và năm")
+            .setView(dialogView)
+            .setPositiveButton("OK") { _, _ ->
+                val selectedMonth = monthPicker.value - 1
+                val selectedYear = yearPicker.value
+                calendar.set(Calendar.MONTH, selectedMonth)
+                calendar.set(Calendar.YEAR, selectedYear)
+                loadTransactionsAndDrawCalendar()
+            }
+            .setNegativeButton("Bỏ qua", null)
+            .show()
+    }
+
 
 
     private fun getCategoryIconRes(category: String): Int {

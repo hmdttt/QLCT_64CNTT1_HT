@@ -31,10 +31,18 @@ class FullReportFragment : Fragment() {
 
         db = FirebaseFirestore.getInstance()
 
+        binding.tvBack.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.frame_container, SettingFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         loadReportData()
 
         return binding.root
     }
+
 
     private fun loadReportData() {
         val user = FirebaseAuth.getInstance().currentUser
@@ -43,10 +51,9 @@ class FullReportFragment : Fragment() {
             return
         }
 
-        val userId = user.uid
-        val transactionsRef = db.collection("transactions").whereEqualTo("userId", userId)
+         db.collection("transactions")//.whereEqualTo("userId", userId)
 
-        transactionsRef.get()
+            .get()
             .addOnSuccessListener { snapshot ->
                 var totalIncome = 0
                 var totalExpense = 0

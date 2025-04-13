@@ -1,121 +1,102 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#000000"
-    android:orientation="vertical"
-    android:padding="16dp"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:fitsSystemWindows="true"
+    android:fillViewport="true"
+    android:padding="16dp">
 
-    <!-- Ô tìm kiếm -->
+    <!-- Tiêu đề và nút "Khác" -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Tìm kiếm"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Khác ⮕"
+            android:textColor="@android:color/holo_orange_dark"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Thanh tìm kiếm -->
     <EditText
         android:id="@+id/editTextSearch"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@drawable/bg_search_box"
+        android:layout_height="wrap_content"
         android:hint="Tìm kiếm"
-        android:drawableStart="@android:drawable/ic_menu_search"
-        android:paddingStart="12dp"
-        android:textColorHint="#999999"
-        android:textColor="#ffffff"
-        android:layout_marginBottom="16dp"
-        android:focusable="true"
-        android:clickable="true"
-        android:inputType="text"/>
+        android:padding="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#888888"
+        android:drawableLeft="@android:drawable/ic_menu_search"
+        android:layout_marginBottom="16dp" />
 
+    <!-- TextView hiển thị tổng -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="3"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:gravity="center"
+        android:layout_marginBottom="12dp">
 
-        <!-- Thu nhập -->
-        <LinearLayout
+        <TextView
+            android:id="@+id/textIncome"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Thu nhập\n0đ"
+            android:textColor="@android:color/holo_blue_light"
+            android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Thu nhập"
-                android:textSize="14sp"
-                android:textColor="#FFFFFF" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textIncome"
-                android:text="0đ"
-                android:textColor="#03A9F4"
-                android:textSize="16sp"
-                android:layout_marginTop="4dp"
-                android:gravity="center"/>
-        </LinearLayout>
-
-        <!-- Chi phí -->
-        <LinearLayout
+        <TextView
+            android:id="@+id/textExpense"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Chi phí\n0đ"
+            android:textColor="@android:color/holo_red_light"
+            android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chi phí"
-                android:textSize="14sp"
-                android:textColor="#FFFFFF" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textExpense"
-                android:text="0đ"
-                android:textColor="#F44336"
-                android:textSize="16sp"
-                android:layout_marginTop="4dp"
-                android:gravity="center"/>
-        </LinearLayout>
-
-        <!-- Tổng -->
-        <LinearLayout
+        <TextView
+            android:id="@+id/textTotal"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tổng"
-                android:textSize="14sp"
-                android:textColor="#FFFFFF" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textTotal"
-                android:text="+0đ"
-                android:textColor="#03A9F4"
-                android:textSize="16sp"
-                android:layout_marginTop="4dp"
-                android:gravity="center"/>
-        </LinearLayout>
-
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Tổng\n0đ"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textStyle="bold" />
     </LinearLayout>
 
-
-    <!-- Danh sách kết quả -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewResults"
+    <!-- Danh sách kết quả bằng ScrollView chứa LinearLayout -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="16dp"/>
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/resultLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 </LinearLayout>
+

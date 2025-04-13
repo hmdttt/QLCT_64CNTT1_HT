@@ -1,74 +1,173 @@
+
 package com.example.expensemanager
 
-import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.TextView
+import android.view.*
+import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
-import kotlin.math.abs
+import com.example.expensemanager.databinding.FragmentTransactionSearchBinding
+import com.example.expensemanager.models.Transaction
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.text.DecimalFormat
+import java.util.*
 
 class TransactionSearchFragment : Fragment() {
+    private var _binding: FragmentTransactionSearchBinding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var editTextSearch: EditText
-    private lateinit var textIncome: TextView
-    private lateinit var textExpense: TextView
-    private lateinit var textTotal: TextView
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
-    @SuppressLint("MissingInflatedId")
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        // Gắn layout XML với fragment
-        val view = inflater.inflate(R.layout.fragment_transaction_search, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentTransactionSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        // Ánh xạ các view
-        editTextSearch = view.findViewById(R.id.editTextSearch)
-        textIncome = view.findViewById(R.id.textIncome)
-        textExpense = view.findViewById(R.id.textExpense)
-        textTotal = view.findViewById(R.id.textTotal)
-        recyclerView = view.findViewById(R.id.recyclerViewResults)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        // Tạm ẩn RecyclerView ban đầu
-        recyclerView.visibility = View.GONE
+        auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
 
-        // Bắt sự kiện người dùng nhập vào ô tìm kiếm
-        editTextSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        binding.tvBack.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.frame_container, SettingFragment())
+                .addToBackStack(null)
+                .commit()
+        }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
+        binding.editTextSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                val keyword = s.toString()
+                val keyword = s.toString().trim()
                 searchTransactions(keyword)
             }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        return view
+        searchTransactions("")
     }
 
-    // Hàm xử lý tìm kiếm
     private fun searchTransactions(keyword: String) {
-        // Tạm thời dùng số liệu giả
-        val income = 1000000 // Giả lập thu nhập từ các giao dịch khớp
-        val expense = 400000 // Giả lập chi phí từ các giao dịch khớp
-        val total = income - expense
+        val user = auth.currentUser ?: return
+        db.collection("transactions")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val txns = snapshot.documents.mapNotNull { doc ->
+                    val txn = doc.toObject(Transaction::class.java)
+                    txn?.let { TransactionWithId(doc.id, it) }
+                }
+                val filtered = txns.filter {
+                    it.transaction.category.contains(keyword, ignoreCase = true)
+                }
+                updateSummary(filtered)
+                showResults(filtered)
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Lỗi khi tìm kiếm", Toast.LENGTH_SHORT).show()
+            }
+    }
 
-        // Cập nhật giao diện
-        textIncome.text = "Thu nhập\n${income}đ"
-        textExpense.text = "Chi phí\n${expense}đ"
-        textTotal.text = "Tổng\n${if (total >= 0) "+" else "-"}${abs(total)}đ"
+    private fun updateSummary(results: List<TransactionWithId>) {
+        var income = 0
+        var expense = 0
+        for (txn in results) {
+            if (txn.transaction.type == "income") income += txn.transaction.amount
+            else expense += txn.transaction.amount
+        }
+        binding.textIncome.text = "Thu nhập\n${formatMoney(income)}"
+        binding.textExpense.text = "Chi phí\n${formatMoney(-expense)}"
+        binding.textTotal.text = "Tổng\n${formatMoney(income - expense)}"
+    }
 
-        // (Tuỳ chọn) nếu có kết quả thì hiện danh sách, ở bước sau bạn sẽ thêm dữ liệu thật
-        recyclerView.visibility = View.VISIBLE
+    private fun showResults(results: List<TransactionWithId>) {
+        binding.resultLayout.removeAllViews()
+
+        if (results.isEmpty()) {
+            val emptyView = TextView(requireContext())
+            emptyView.text = "Không có giao dịch nào"
+            emptyView.setPadding(16, 16, 16, 16)
+            binding.resultLayout.addView(emptyView)
+            return
+        }
+
+        val groupedByDate = results.groupBy { it.transaction.date }
+        for ((date, txns) in groupedByDate) {
+            val dateTitle = TextView(requireContext())
+            dateTitle.text = "Ngày $date"
+            dateTitle.setTextColor(Color.DKGRAY)
+            dateTitle.textSize = 16f
+            dateTitle.setPadding(16, 16, 16, 8)
+            binding.resultLayout.addView(dateTitle)
+
+            for (txn in txns) {
+                val view = layoutInflater.inflate(R.layout.item_transaction_calendar, binding.resultLayout, false)
+                val tvName = view.findViewById<TextView>(R.id.tvName)
+                val tvAmount = view.findViewById<TextView>(R.id.tvAmount)
+                val icon = view.findViewById<ImageView>(R.id.iconCategory)
+
+                val t = txn.transaction
+                tvName.text = t.category
+                tvAmount.text = formatMoney(if (t.type == "income") t.amount else -t.amount)
+                tvAmount.setTextColor(if (t.type == "income") Color.BLUE else Color.RED)
+                icon.setImageResource(getCategoryIconRes(t.category))
+
+                view.setOnClickListener { openEditTransaction(txn) }
+                binding.resultLayout.addView(view)
+            }
+        }
+    }
+
+    private fun openEditTransaction(txn: TransactionWithId) {
+        val t = txn.transaction
+        val fragment = HomeFragment()
+        val bundle = Bundle().apply {
+            putString("edit_mode", "true")
+            putString("transaction_id", txn.id)
+            putString("amount", t.amount.toString())
+            putString("note", t.note)
+            putString("date", t.date)
+            putString("type", t.type)
+            putString("category", t.category)
+        }
+        fragment.arguments = bundle
+
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.frame_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun formatMoney(amount: Int): String {
+        return DecimalFormat("#,###").format(amount) + "đ"
+    }
+
+    private fun getCategoryIconRes(category: String): Int {
+        return when (category.lowercase(Locale.ROOT)) {
+            "ăn uống" -> R.drawable.icons8_hamburger48
+            "giải trí", "phí ăn chơi" -> R.drawable.icons8_play
+            "quần áo", "mua sắm" -> R.drawable.icons8_shirt
+            "mỹ phẩm" -> R.drawable.icons8_cosmetics_48
+            "gia dụng" -> R.drawable.icons_8home48
+            "y tế" -> R.drawable.icons8_health48
+            "giáo dục" -> R.drawable.icons8_education
+            "đi lại" -> R.drawable.icons8_car48
+            "tiền nhà" -> R.drawable.icons8_tiennha
+            "liên lạc" -> R.drawable.icons8_phone
+            "tiết kiệm" -> R.drawable.icons8_pig
+            "lương", "thưởng", "phụ cấp" -> R.drawable.icons8_money48
+            else -> R.drawable.icons8_pencil_50
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
+
 
