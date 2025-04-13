@@ -29,6 +29,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.expensemanager.helpers.GPTHelper
 import com.google.firebase.auth.FirebaseAuth
 import org.json.JSONArray
 import org.json.JSONObject
@@ -226,10 +227,12 @@ class HomeFragment : Fragment() {
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
+
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view =  inflater.inflate(R.layout.fragment_home, container, false)
+        Log.d("DEBUG_HOME", "🧩 onCreateView đã chạy")
 
 
         view.findViewById<Button>(R.id.btnCaptureReceipt).setOnClickListener {
@@ -443,6 +446,14 @@ class HomeFragment : Fragment() {
         }
         arguments?.let {
             if (it.getString("edit_mode") == "true") {
+                Log.d("DEBUG_HOME", "✏️ Dữ liệu truyền vào chỉnh sửa:")
+                Log.d("DEBUG_HOME", "transaction_id = ${it.getString("transaction_id")}")
+                Log.d("DEBUG_HOME", "amount = ${it.getString("amount")}")
+                Log.d("DEBUG_HOME", "note = ${it.getString("note")}")
+                Log.d("DEBUG_HOME", "date = ${it.getString("date")}")
+                Log.d("DEBUG_HOME", "type = ${it.getString("type")}")
+                Log.d("DEBUG_HOME", "category = ${it.getString("category")}")
+
                 val amount = it.getString("amount")
                 val note = it.getString("note")
                 val date = it.getString("date")

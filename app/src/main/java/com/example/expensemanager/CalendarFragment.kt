@@ -71,22 +71,24 @@ class CalendarFragment : Fragment() {
             .addOnSuccessListener { snapshot ->
                 Log.d("DEBUG", "Tổng số bản ghi Firestore: ${snapshot.size()}")
 
-                val transactions = snapshot.documents.mapNotNull {
-                    it.toObject(Transaction::class.java)
+                val transactions = snapshot.documents.mapNotNull { doc ->
+                    val txn = doc.toObject(Transaction::class.java)
+                    txn?.let { TransactionWithId(doc.id, it) }
                 }
+
 
                 val filtered = transactions.filter {
                     val transDate = try {
-                        sdf.parse(it.date)
+                        sdf.parse(it.transaction.date)
                     } catch (e: Exception) {
-                        Log.e("DEBUG", "Lỗi parse ngày: ${it.date}")
+                        Log.e("DEBUG", "Lỗi parse ngày: ${it.transaction.date}")
                         null
                     }
 
                     val cal = Calendar.getInstance().apply { time = transDate ?: Date(0) }
                     val result = cal.get(Calendar.MONTH) == month && cal.get(Calendar.YEAR) == year
 
-                    Log.d("DEBUG", "⏱ ${it.date} → ${transDate?.toString()} | match = $result")
+                    Log.d("DEBUG", "⏱ ${it.transaction.date} → ${transDate?.toString()} | match = $result")
 
                     result
                 }
@@ -95,7 +97,7 @@ class CalendarFragment : Fragment() {
 
                 val grouped = filtered.groupBy {
                     val cal = Calendar.getInstance()
-                    cal.time = sdf.parse(it.date) ?: Date()
+                    cal.time = sdf.parse(it.transaction.date) ?: Date()
                     cal.get(Calendar.DAY_OF_MONTH)
                 }
 
@@ -112,7 +114,7 @@ class CalendarFragment : Fragment() {
     }
 
 
-    private fun drawCalendar(year: Int, month: Int, transactionsByDate: Map<Int, List<Transaction>>) {
+    private fun drawCalendar(year: Int, month: Int, transactionsByDate: Map<Int, List<TransactionWithId>>) {
         binding.tvMonthYear.text = SimpleDateFormat("MM/yyyy", Locale.getDefault()).format(calendar.time)
 
         val cal = Calendar.getInstance().apply { set(year, month, 1) }
@@ -135,8 +137,8 @@ class CalendarFragment : Fragment() {
 
         for (list in transactionsByDate.values) {
             for (txn in list) {
-                if (txn.type == "income") income += txn.amount
-                else expense += txn.amount
+                if (txn.transaction.type == "income") income += txn.transaction.amount
+                else expense += txn.transaction.amount
             }
         }
 
@@ -172,7 +174,7 @@ class CalendarFragment : Fragment() {
 
                         if (!list.isNullOrEmpty()) {
                             val total = list.sumOf {
-                                if (it.type == "income") it.amount else -it.amount
+                                if (it.transaction.type == "income") it.transaction.amount else -it.transaction.amount
                             }
                             tvAmount.text = formatMoney(total)
                             tvAmount.setTextColor(if (total >= 0) Color.BLUE else Color.RED)
@@ -201,7 +203,7 @@ class CalendarFragment : Fragment() {
     }
 
 
-    private fun showTransactionsForDay(transactions: List<Transaction>) {
+    private fun showTransactionsForDay(transactions: List<TransactionWithId>) {
         binding.transactionListLayout.removeAllViews()
 
         if (transactions.isEmpty()) {
@@ -213,7 +215,7 @@ class CalendarFragment : Fragment() {
         }
 
         // Group by date
-        val groupedByDate = transactions.groupBy { it.date }
+        val groupedByDate = transactions.groupBy { it.transaction.date }
 
         for ((date, txnsOnDate) in groupedByDate) {
             // Hiển thị ngày
@@ -226,19 +228,51 @@ class CalendarFragment : Fragment() {
 
             for (txn in txnsOnDate) {
                 val view = layoutInflater.inflate(R.layout.item_transaction_calendar, binding.transactionListLayout, false)
+
+                // Log để kiểm tra xem view có được tạo không
+                Log.d("CALENDAR_CLICK", "✅ Đã tạo view cho giao dịch: ${txn.transaction.category}")
+
                 val tvName = view.findViewById<TextView>(R.id.tvName)
                 val tvAmount = view.findViewById<TextView>(R.id.tvAmount)
                 val img = view.findViewById<ImageView>(R.id.iconCategory)
 
-                tvName.text = txn.category
-                tvAmount.text = formatMoney(if (txn.type == "income") txn.amount else -txn.amount)
-                tvAmount.setTextColor(if (txn.type == "income") Color.BLUE else Color.RED)
-                img.setImageResource(getCategoryIconRes(txn.category))
+                val t = txn.transaction  // Sử dụng txn.transaction để lấy thông tin giao dịch
+
+                tvName.text = t.category
+                tvAmount.text = formatMoney(if (t.type == "income") t.amount else -t.amount)
+                tvAmount.setTextColor(if (t.type == "income") Color.BLUE else Color.RED)
+                img.setImageResource(getCategoryIconRes(t.category))
+
+                // Gán sự kiện click cho từng item giao dịch
+                val layout = view.findViewById<LinearLayout>(R.id.transaction_item_layout)
+                layout.setOnClickListener {
+                    Log.d("CALENDAR_CLICK", "✅ Bấm vào giao dịch: ${txn.transaction.category} - ${txn.transaction.amount}")
+
+                    val fragment = HomeFragment()
+                    val bundle = Bundle().apply {
+                        putString("edit_mode", "true")
+                        putString("transaction_id", txn.id) // Đảm bảo txn.id được truyền đúng
+                        putString("amount", t.amount.toString())
+                        putString("note", t.note)
+                        putString("date", t.date)
+                        putString("type", t.type)
+                        putString("category", t.category)
+                    }
+                    fragment.arguments = bundle
+
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.frame_container, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
 
                 binding.transactionListLayout.addView(view)
+
+                Log.d("CALENDAR_CLICK", "✅ Đã thêm giao dịch vào transactionListLayout")
             }
         }
     }
+
 
     private fun getCategoryIconRes(category: String): Int {
         return when (category.lowercase(Locale.ROOT)) {
