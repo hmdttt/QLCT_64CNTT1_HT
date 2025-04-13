@@ -502,6 +502,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Nhập khoản thu"
+                android:background="@drawable/bg_button"
                 android:textColor="@android:color/white" />
         </LinearLayout>
         <LinearLayout
@@ -536,15 +537,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Chụp hóa đơn"
-            android:layout_marginTop="12dp" />
-
-        <ImageView
-            android:id="@+id/imagePreview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:layout_marginTop="8dp"
-            android:visibility="gone"/>
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_button"/>
 
     </LinearLayout>
 

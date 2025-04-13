@@ -17,6 +17,10 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io")
+        maven{
+            url = uri("https://pkgs.dev.azure.com/google-gemini/ai-sdk/_packaging/maven-public/maven/v1")
+        }
+
     }
 }
 

@@ -177,7 +177,8 @@ class ReportFragment : Fragment() {
         fetchData()
         updateDateDisplay()
 
-
+        updateButtons(true)
+        updateButtons2(true)
         return view
     }
 
@@ -317,11 +318,7 @@ class ReportFragment : Fragment() {
                     amountStr.length, spannable.length,
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
-
                 tvAmountPercent.text = spannable
-
-
-
                 return row
             }
         }
@@ -343,8 +340,6 @@ class ReportFragment : Fragment() {
         }
 
     }
-
-
 
     private fun showPieChart(data: Map<String, Int>) {
         val entries = ArrayList<PieEntry>()
@@ -371,9 +366,6 @@ class ReportFragment : Fragment() {
         pieChart.invalidate()
     }
 
-
-
-
     private fun updateDateDisplay() {
         val formatted = if (isYearly) {
             "${selectedCalendar.get(Calendar.YEAR)}"
@@ -383,26 +375,4 @@ class ReportFragment : Fragment() {
         }
         edtDate.setText(formatted)
     }
-    inner class ReportAdapter(
-        private val items: List<Triple<String, Int, Double>> // category, amount, percent
-    ) : ArrayAdapter<Triple<String, Int, Double>>(requireContext(), 0, items) {
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val view = convertView ?: LayoutInflater.from(context)
-                .inflate(R.layout.item_report, parent, false)
-
-            val (category, amount, percent) = items[position]
-
-            val tvCategory = view.findViewById<TextView>(R.id.tvCategory)
-            val tvAmountPercent = view.findViewById<TextView>(R.id.tvAmountPercent)
-
-            tvCategory.text = category
-            tvAmountPercent.text = "$amount (${String.format("%.1f", percent)}%)"
-
-            return view
-        }
-    }
-
-
-
 }

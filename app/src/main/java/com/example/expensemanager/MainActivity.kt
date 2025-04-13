@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
             when(it.itemId) {
                 R.id.nav_home -> loadFragment(HomeFragment())
                 R.id.nav_report -> loadFragment(ReportFragment())
+                R.id.nav_calendar -> loadFragment(CalendarFragment())
             }
             true
         }

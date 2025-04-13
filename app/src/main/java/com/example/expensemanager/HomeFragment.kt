@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import android.app.DatePickerDialog
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.WindowManager
@@ -28,6 +29,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.expensemanager.helpers.GPTHelper
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -88,111 +90,27 @@ class HomeFragment : Fragment() {
     private val CAMERA_REQUEST_CODE = 101
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
         bitmap?.let {
-            view?.findViewById<ImageView>(R.id.imagePreview)?.setImageBitmap(bitmap)
-            recognizeTextFromImage(bitmap)
+
+            // ✅ Gọi helper mới
+            GPTHelper.recognizeTextFromImage(requireContext(), bitmap) { content ->
+                requireActivity().runOnUiThread {
+                    showTransactionPreviewDialog(content) // Bạn đã có hàm này
+                }
+            }
+        }
+    }
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, it)
+            GPTHelper.recognizeTextFromImage(requireContext(), bitmap) { content ->
+                requireActivity().runOnUiThread {
+                    showTransactionPreviewDialog(content)
+                }
+            }
         }
     }
 
-    private fun recognizeTextFromImage(bitmap: Bitmap) {
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-        val image = InputImage.fromBitmap(bitmap, 0)
 
-        recognizer.process(image)
-            .addOnSuccessListener { visionText ->
-                val rawText = visionText.text
-                Log.d("OCR", "Raw text: $rawText")
-                sendToGPT(rawText)
-            }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "Không thể nhận diện văn bản", Toast.LENGTH_SHORT).show()
-            }
-    }
-    private fun sendToGPT(text: String) {
-        val prompt = """
-        Tôi gửi bạn nội dung hóa đơn sau:
-        "$text"
-        Hãy phân tích, đây là các category để bạn chọn: "Ăn uống", "Đi lại", "Quần áo", "Gia dụng", "Mỹ phẩm", 
-         "Phí ăn chơi", "Y tế", "Giáo dục", "Tiền nhà", "Liên lạc", "Tiết kiệm". Và trả về danh sách các khoản chi với định dạng JSON:
-        [
-          { "amount": ..., "category": "...", "note": "..." },
-          ...
-        ]
-    """.trimIndent()
-
-        val apiKey = "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" // 🔑 Thay bằng OpenRouter API Key
-
-        val json = JSONObject()
-        json.put("model", "gpt-3.5-turbo") // ✅ Đúng model ID // ✅ Dùng mô hình miễn phí
-        json.put("messages", JSONArray().apply {
-            put(JSONObject().apply {
-                put("role", "user")
-                put("content", prompt)
-            })
-        })
-
-        val requestBody = RequestBody.create(
-            "application/json".toMediaTypeOrNull(),
-            json.toString()
-        )
-
-        val request = Request.Builder()
-            .url("https://openrouter.ai/api/v1/chat/completions")
-            .addHeader("Authorization", "Bearer $apiKey")
-            .addHeader("Content-Type", "application/json")
-            .post(requestBody)
-            .build()
-
-        OkHttpClient().newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("GPT", "Lỗi gửi yêu cầu: ${e.message}")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val result = response.body?.string()
-                Log.d("GPT_Response", result ?: "No result")
-
-                try {
-                    val jsonResult = JSONObject(result)
-
-                    // Kiểm tra nếu phản hồi là lỗi
-                    if (jsonResult.has("error")) {
-                        val msg = jsonResult.getJSONObject("error").optString("message")
-                        Log.e("GPT_Error", msg)
-                        requireActivity().runOnUiThread {
-                            Toast.makeText(requireContext(), "GPT lỗi: $msg", Toast.LENGTH_LONG).show()
-                        }
-                        return
-                    }
-
-                    // Nếu có choices mới xử lý
-                    if (jsonResult.has("choices")) {
-                        val content = jsonResult
-                            .getJSONArray("choices")
-                            .getJSONObject(0)
-                            .getJSONObject("message")
-                            .getString("content")
-
-                        requireActivity().runOnUiThread {
-                            showTransactionPreviewDialog(content)
-                        }
-                    } else {
-                        Log.e("GPT", "Không có 'choices'")
-                        requireActivity().runOnUiThread {
-                            Toast.makeText(requireContext(), "Phản hồi không hợp lệ từ GPT", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                } catch (e: Exception) {
-                    Log.e("GPT_Exception", "Lỗi JSON: ${e.message}")
-                    requireActivity().runOnUiThread {
-                        Toast.makeText(requireContext(), "Lỗi xử lý kết quả GPT", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-
-
-        })
-    }
     private fun showTransactionPreviewDialog(jsonString: String) {
         val dialogView = LayoutInflater.from(requireContext())
             .inflate(R.layout.dialog_transaction_preview, null)
@@ -326,8 +244,18 @@ class HomeFragment : Fragment() {
 
 
         view.findViewById<Button>(R.id.btnCaptureReceipt).setOnClickListener {
-            cameraLauncher.launch(null)
+            val options = arrayOf("Chụp ảnh", "Chọn từ thư viện")
+            val builder = android.app.AlertDialog.Builder(requireContext())
+            builder.setTitle("Chọn nguồn ảnh")
+            builder.setItems(options) { _, which ->
+                when (which) {
+                    0 -> cameraLauncher.launch(null)        // Mở camera
+                    1 -> galleryLauncher.launch("image/*")  // Mở thư viện
+                }
+            }
+            builder.show()
         }
+
         if (ContextCompat.checkSelfPermission(requireContext(), CAMERA_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(CAMERA_PERMISSION), CAMERA_REQUEST_CODE)
         }
