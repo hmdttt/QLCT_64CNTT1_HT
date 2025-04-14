@@ -74,7 +74,7 @@ class CalendarFragment : Fragment() {
         Log.d("DEBUG", "Thời gian từ: ${sdf.format(startCal.time)} đến ${sdf.format(endCal.time)}")
 
         db.collection("transactions")
-            //.whereEqualTo("userId", user.uid)
+            .whereEqualTo("userId", user.uid)
             .get()
             .addOnSuccessListener { snapshot ->
                 Log.d("DEBUG", "Tổng số bản ghi Firestore: ${snapshot.size()}")

@@ -51,7 +51,7 @@ class FullReportFragment : Fragment() {
             return
         }
 
-         db.collection("transactions")//.whereEqualTo("userId", userId)
+         db.collection("transactions").whereEqualTo("userId", user.uid)
 
             .get()
             .addOnSuccessListener { snapshot ->

@@ -54,7 +54,7 @@ class TransactionSearchFragment : Fragment() {
 
     private fun searchTransactions(keyword: String) {
         val user = auth.currentUser ?: return
-        db.collection("transactions")
+        db.collection("transactions").whereEqualTo("userId", user.uid)
             .get()
             .addOnSuccessListener { snapshot ->
                 val txns = snapshot.documents.mapNotNull { doc ->
