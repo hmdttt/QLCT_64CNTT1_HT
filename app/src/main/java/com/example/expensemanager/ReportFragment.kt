@@ -210,6 +210,7 @@ class ReportFragment : Fragment() {
     }
 
     private fun displayFilteredData() {
+        if (!isAdded || context == null || view == null) return
         val filtered = transactionList.filter {
             (it.type == if (isExpense) "expense" else "income") &&
                     (if (isYearly) {

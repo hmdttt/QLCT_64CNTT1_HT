@@ -109,7 +109,10 @@ class CalendarFragment : Fragment() {
                     cal.get(Calendar.DAY_OF_MONTH)
                 }
 
-                drawCalendar(year, month, grouped)
+                if (isAdded && view != null && _binding != null) {
+                    drawCalendar(year, month, grouped)
+                }
+
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show()
