@@ -428,7 +428,7 @@ class HomeFragment : Fragment() {
             val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
             val transaction = Transaction(amount, note, date, "expense", selectedCategory!!, userId)
 
-            saveTransaction(amount, note, date, selectedType!!, selectedCategory!!)
+            saveTransaction(transaction.amount, transaction.note, transaction.date, transaction.type, transaction.category, userId)
         }
 
         btnAddIncome.setOnClickListener {
@@ -441,7 +441,10 @@ class HomeFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            saveTransaction(amount, note, date, selectedType!!, selectedCategory!!)
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+            saveTransaction(amount, note, date, "expense", selectedCategory!!, userId)
+
         }
         arguments?.let {
             if (it.getString("edit_mode") == "true") {
@@ -557,11 +560,11 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun saveTransaction(amount: Int, note: String, date: String, type: String, category: String) {
+    private fun saveTransaction(amount: Int, note: String, date: String, type: String, category: String, userId: String = "") {
         Log.d("FirestoreDebug", "Saving transaction: amount=$amount, note=$note, date=$date, type=$type, category=$category")
 
         val db = FirebaseFirestore.getInstance()
-        val transaction = Transaction(amount, note, date, type, category)
+        val transaction = Transaction(amount, note, date, type, category, userId)
 
         db.collection("transactions")
             .add(transaction)

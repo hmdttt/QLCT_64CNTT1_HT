@@ -28,6 +28,7 @@ import android.text.style.StyleSpan
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import com.google.firebase.auth.FirebaseAuth
 import java.text.NumberFormat
 
 
@@ -192,7 +193,9 @@ class ReportFragment : Fragment() {
     }
 
     private fun fetchData() {
-        db.collection("transactions").get()
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+        db.collection("transactions").whereEqualTo("userId",currentUserId)
+            .get()
             .addOnSuccessListener { result ->
                 transactionList.clear()
                 for (doc in result) {
