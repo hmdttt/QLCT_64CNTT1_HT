@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/category_button"
+    android:padding="12dp"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/ivCategoryIcon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/icons8_pencil_50" />
+
+    <TextView
+        android:id="@+id/tvCategoryName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mới"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="6dp"/>
+</LinearLayout>

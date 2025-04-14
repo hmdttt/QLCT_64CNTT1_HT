@@ -296,7 +296,7 @@ class ReportFragment : Fragment() {
                     "lương"       -> R.drawable.icons8_money48
                     "thưởng"      -> R.drawable.icons8_thuong
                     "phụ cấp"     -> R.drawable.icons8_dautu
-                    else          -> R.drawable.icons8_thuong
+                    else          -> R.drawable.icons8_pencil_50
                 }
                 imgCategoryIcon.setImageResource(iconRes)
 

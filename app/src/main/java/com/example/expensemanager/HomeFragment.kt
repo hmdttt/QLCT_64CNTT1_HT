@@ -13,15 +13,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.expensemanager.models.Transaction
 import com.google.firebase.firestore.FirebaseFirestore
-
 import android.app.DatePickerDialog
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.WindowManager
 import android.widget.ArrayAdapter
+import android.widget.GridLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ListView
@@ -47,6 +45,12 @@ class HomeFragment : Fragment() {
     private lateinit var btnTienChi: Button
     private lateinit var layoutTienThu: LinearLayout
     private lateinit var layoutTienChi: LinearLayout
+
+    private lateinit var gridLayoutChi: GridLayout
+    private lateinit var gridLayoutThu: GridLayout
+    private lateinit var btnAddCategoryExpense: LinearLayout
+    private lateinit var btnAddCategoryIncome: LinearLayout
+
 
     private lateinit var btnPrevDate: ImageButton
     private lateinit var btnNextDate: ImageButton
@@ -260,6 +264,11 @@ class HomeFragment : Fragment() {
         edtDate = view.findViewById(R.id.etDate)
         updateDateEditText()
 
+        gridLayoutChi = view.findViewById(R.id.gridLayoutTienChi)
+        gridLayoutThu = view.findViewById(R.id.gridLayoutTienthu)
+        btnAddCategoryExpense = view.findViewById(R.id.btnAddCategoryExpense)
+        btnAddCategoryIncome = view.findViewById(R.id.btnAddCategoryIncome)
+
 
         btnPrevDate = view.findViewById(R.id.btnPreviousDate)
         btnNextDate = view.findViewById(R.id.btnNextDate)
@@ -412,6 +421,14 @@ class HomeFragment : Fragment() {
             selectedType = "income"
             btnPhuCap.isSelected = true
         }
+        btnAddCategoryExpense.setOnClickListener {
+            showAddCategoryDialog(isExpense = true)
+        }
+
+        btnAddCategoryIncome.setOnClickListener {
+            showAddCategoryDialog(isExpense = false)
+        }
+
 
         val btnAddExpense = view.findViewById<Button>(R.id.btnAddExpense)
         val btnAddIncome = view.findViewById<Button>(R.id.btnAddIncome)
@@ -426,9 +443,8 @@ class HomeFragment : Fragment() {
                 return@setOnClickListener
             }
             val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-            val transaction = Transaction(amount, note, date, "expense", selectedCategory!!, userId)
 
-            saveTransaction(transaction.amount, transaction.note, transaction.date, transaction.type, transaction.category, userId)
+            saveTransaction(amount, note, date, selectedType!!, selectedCategory!!, userId)
         }
 
         btnAddIncome.setOnClickListener {
@@ -443,7 +459,7 @@ class HomeFragment : Fragment() {
 
             val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-            saveTransaction(amount, note, date, "expense", selectedCategory!!, userId)
+            saveTransaction(amount, note, date, selectedType!!, selectedCategory!!, userId)
 
         }
         arguments?.let {
@@ -604,6 +620,54 @@ class HomeFragment : Fragment() {
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         edtDate.setText(sdf.format(selectedCalendar.time))
     }
+    private fun showAddCategoryDialog(isExpense: Boolean) {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_category, null)
+        val edtCategoryName = dialogView.findViewById<EditText>(R.id.edtCategoryName)
 
+        android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Thêm danh mục mới")
+            .setView(dialogView)
+            .setPositiveButton("Thêm") { _, _ ->
+                val name = edtCategoryName.text.toString().trim()
+                if (name.isNotEmpty()) {
+                    addCategoryButton(name, isExpense, isCustom = true)
+                    selectedCategory = name
+                    selectedType = if (isExpense) "expense" else "income"
+                    Toast.makeText(requireContext(), "Đã chọn danh mục mới: $name", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
+    }
+    private fun addCategoryButton(categoryName: String, isExpense: Boolean, isCustom: Boolean = false) {
+        val layout = LayoutInflater.from(requireContext()).inflate(R.layout.item_category_button, null) as LinearLayout
+        val text = layout.findViewById<TextView>(R.id.tvCategoryName)
+        val image = layout.findViewById<ImageView>(R.id.ivCategoryIcon)
+
+        text.text = categoryName
+        image.setImageResource(R.drawable.icons8_pencil_50) // icon danh mục riêng
+
+        layout.setOnClickListener {
+            resetCategoryViews()
+            selectedCategory = categoryName
+            selectedType = if (isExpense) "expense" else "income"
+            layout.isSelected = true
+        }
+
+        val params = GridLayout.LayoutParams().apply {
+            width = 0
+            height = GridLayout.LayoutParams.WRAP_CONTENT
+            columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+            setMargins(8, 8, 8, 8)
+        }
+        layout.layoutParams = params
+
+        if (isExpense) {
+            gridLayoutChi.addView(layout, gridLayoutChi.childCount - 1)
+        } else {
+            gridLayoutThu.addView(layout, gridLayoutThu.childCount - 1)
+        }
+    }
 
 }

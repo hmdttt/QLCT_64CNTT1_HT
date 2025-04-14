@@ -11,7 +11,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="8dp"
-        android:src="@drawable/icons8_thuong" />
+        android:src="@drawable/icons8_pencil_50" />
 
     <!-- Danh mục bên trái -->
     <TextView

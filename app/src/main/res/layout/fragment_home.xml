@@ -390,6 +390,31 @@
                         android:textSize="14sp"
                         android:layout_marginTop="6dp"/>
                 </LinearLayout>
+                <!-- Nút thêm danh mục mới (dưới cùng của gridLayoutTienChi) -->
+                <LinearLayout
+                    android:id="@+id/btnAddCategoryExpense"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_add" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thêm"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
 
 
             </GridLayout>
@@ -495,6 +520,32 @@
                         android:textSize="14sp"
                         android:layout_marginTop="6dp"/>
                 </LinearLayout>
+                <!-- Nút thêm danh mục mới (dưới cùng của gridLayoutTienChi) -->
+                <LinearLayout
+                    android:id="@+id/btnAddCategoryIncome"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:background="@drawable/category_button">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_add" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thêm"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
 
             </GridLayout>
 
