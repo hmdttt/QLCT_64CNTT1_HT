@@ -15,7 +15,7 @@ import java.io.IOException
 
 object GPTHelper {
 
-    fun recognizeTextFromImage(context: Context, bitmap: Bitmap, onResult: (String) -> Unit) {
+    fun recognizeTextFromImage(context: Context, bitmap: Bitmap,userId: String, onResult: (String) -> Unit) {
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         val image = InputImage.fromBitmap(bitmap, 0)
 
@@ -23,14 +23,14 @@ object GPTHelper {
             .addOnSuccessListener { visionText ->
                 val rawText = visionText.text
                 Log.d("OCR", "Raw text: $rawText")
-                sendToGPT(context, rawText, onResult)
+                sendToGPT(context, rawText, userId,onResult)
             }
             .addOnFailureListener {
                 Toast.makeText(context, "Không thể nhận diện văn bản", Toast.LENGTH_SHORT).show()
             }
     }
 
-    fun sendToGPT(context: Context, text: String, onResult: (String) -> Unit) {
+    fun sendToGPT(context: Context, text: String,userId: String, onResult: (String) -> Unit) {
         val prompt = """
             Tôi gửi bạn nội dung hóa đơn sau:
         "$text"
@@ -42,7 +42,7 @@ object GPTHelper {
         ]
     """.trimIndent()
 
-        val apiKey = "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"
+        val apiKey = "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"
         val json = JSONObject().apply {
             put("model", "gpt-3.5-turbo")
             put("messages", JSONArray().apply {

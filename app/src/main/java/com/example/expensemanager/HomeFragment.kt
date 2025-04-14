@@ -79,14 +79,14 @@ class HomeFragment : Fragment() {
     private lateinit var layoutEditButtons: LinearLayout
     private lateinit var btnUpdateTransaction: Button
     private lateinit var btnDeleteTransaction: Button
-
     private val CAMERA_PERMISSION = android.Manifest.permission.CAMERA
     private val CAMERA_REQUEST_CODE = 101
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
         bitmap?.let {
 
             // ✅ Gọi helper mới
-            GPTHelper.recognizeTextFromImage(requireContext(), bitmap) { content ->
+            GPTHelper.recognizeTextFromImage(requireContext(), bitmap, userId) { content ->
                 requireActivity().runOnUiThread {
                     showTransactionPreviewDialog(content) // Bạn đã có hàm này
                 }
@@ -96,7 +96,7 @@ class HomeFragment : Fragment() {
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
             val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, it)
-            GPTHelper.recognizeTextFromImage(requireContext(), bitmap) { content ->
+            GPTHelper.recognizeTextFromImage(requireContext(), bitmap, userId) { content ->
                 requireActivity().runOnUiThread {
                     showTransactionPreviewDialog(content)
                 }
@@ -175,7 +175,9 @@ class HomeFragment : Fragment() {
                 val note = obj.optString("note")
                 val date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
 
-                saveTransaction(amount, note, date, "expense", category)
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+                saveTransaction(amount, note, date, "expense", category, userId)
+
             }
 
             dialog.dismiss()
